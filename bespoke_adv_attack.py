@@ -49,9 +49,10 @@ speaker_ids = pkl['ids']
 X = torch.FloatTensor(X)
 M = torch.FloatTensor(M)
 
+
 # Define constants
-lr = 5*1e-2
-epochs = 20
+lr = 2*1e-1
+epochs = 75
 seed = 1
 torch.manual_seed(seed)
 
@@ -65,11 +66,13 @@ attack_model.train()
 # Learn all bespoke attack vectors together
 optimizer = torch.optim.SGD(attack_model.parameters(), lr=lr, momentum = 0.9, nesterov=True)
 
+original_avg = 0
 for epoch in range(epochs):
     print("On epoch ", epoch)
 
     # forward pass
     y_pred = attack_model(X, M)
+    y_pred[y_pred> 6.0]=6.0
 
     # Compute loss
     loss = -1*torch.sum(y_pred)
@@ -85,5 +88,33 @@ for epoch in range(epochs):
     avg = (-1)*loss/X.size(0)
     print("Average Grade with bespoke attacks: ", avg)
 
+   
+    if epoch == 0:
+        original_avg = avg
+
+# Attempt to predict a universal attack from averaging bespoke attacks
+old_params = {}
+
+for name, params in attack_model.named_parameters():
+   old_params[name] = params.clone()
+
+T = old_params['attack']
+universal_attack = torch.mean(T, dim=0)
+
+test_model = Bespoke_Attack(trained_model_path, universal_attack)
+test_model.eval()
+
+universal_y_pred = test_model(X, M)
+universal_y_pred[universal_y_pred>6.0]=6.0
+universal_avg = torch.sum(universal_y_pred)/X.size(0)
+
+print("------------------------------------------------------------------------------------")
+print("No Attack Average Grade: ", original_avg)
+print("Bespoke Attacks Average Grade: ", avg)
+print("Bespoke Attacks Averaged Universal Average Grade ", universal_avg)
+
+
+
 # Save the model
 torch.save(attack_model, out_file)
+

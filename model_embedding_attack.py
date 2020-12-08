@@ -42,7 +42,6 @@ class Bespoke_Attack(torch.nn.Module):
         n = number of features for word embedding
         '''
         X_attacked = X + self.attack
-
         # Pass through trained model
         trained_model = torch.load(self.trained_model_path)
         trained_model.eval()
