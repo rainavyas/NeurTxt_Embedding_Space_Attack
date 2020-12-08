@@ -25,6 +25,7 @@ with open('CMDs/bertify.cmd', 'a') as f:
 # Define the number of utterances per speaker per part
 utt_part_vals = [6, 8, 1, 1, 5]
 MAX_UTTS_PER_SPEAKER_PART = utt_part_vals[part-1]
+MAX_WORDS_IN_UTT = 200
 
 # Load the data
 with open(data_file, 'r') as f:
