@@ -3,6 +3,8 @@ import sys
 import os
 import argparse
 from transformers import *
+import json
+import torch
 
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
@@ -56,7 +58,9 @@ for item in utterances:
     else:
         tokens_tensor = torch.tensor([indexed_tokens])
         with torch.no_grad():
-            encoded_layers, _ = bert_model(tokens_tensor)
+            outputs = bert_model(tokens_tensor)
+            encoded_layers = outputs.last_hidden_state
+            #encoded_layers, _ = bert_model(tokens_tensor)
         bert_embs = encoded_layers.squeeze(0)
         word_vecs = bert_embs.tolist()
     if speakerid not in utt_embs:
@@ -109,8 +113,10 @@ for id in utt_embs:
     utt_lengths_matrix.append(utt_lengths)
     speaker_ids.append(id)
 
+XT = torch.FloatTensor(X)
+
 # Make the mask from utterance lengths matrix L
-M = [[([1]*utt_len + [-100000]*(X.size(2)- utt_len)) for utt_len in speaker] for speaker in utt_lengths_matrix]
+M = [[([1]*utt_len + [-100000]*(XT.size(2)- utt_len)) for utt_len in speaker] for speaker in utt_lengths_matrix]
 
 # Store all the Bertified data and the associated speaker ids in pickle file
 pkl_obj = {'X': X, 'M': M, 'ids': speaker_ids}
