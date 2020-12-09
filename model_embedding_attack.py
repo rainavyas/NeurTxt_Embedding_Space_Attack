@@ -16,7 +16,7 @@ class Universal_Attack(torch.nn.Module):
         W = number of words
         n = number of features for word embedding
         '''
-        attack_batched = torch.tile(self.attack, (X.size(0),1,1,1))
+        attack_batched = self.attack.repeat((X.size(0),1,1,1))
         X_attacked = X + attack_batched
 
         # Pass through trained model

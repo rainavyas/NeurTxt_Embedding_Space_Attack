@@ -60,7 +60,7 @@ torch.manual_seed(seed)
 attack_init = torch.zeros(X.size(1), X.size(2), X.size(3))
 
 # Initialise Model
-attack_model = Bespoke_Attack(trained_model_path, attack_init)
+attack_model = Universal_Attack(trained_model_path, attack_init)
 attack_model.train()
 
 # Learn universal attack vector
