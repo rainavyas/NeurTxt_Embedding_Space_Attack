@@ -5,7 +5,7 @@ import pickle
 import sys
 import os
 import argparse
-import matplotlib
+import matplotlib as plt
 import seaborn as sns
 
 def plot_y_dist(model, X, M, out_file_path):
@@ -15,10 +15,12 @@ def plot_y_dist(model, X, M, out_file_path):
     y_pred[y_pred<0.0]=0.0
     y = y_pred.tolist()
     sns_plot = sns.distplot(y, hist=True, kde=True,
-             bins=int(6/0.2), color = 'darkblue',
+             bins=int(6/0.1), color = 'darkblue',
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
-    sns_plot.savefig(out_file_path)
+    sns_plot.set(xlabel="y")
+    sns_plot.set(xlim=(0, 6))
+    sns_plot.figure.savefig(out_file_path)
 
 
 
@@ -49,7 +51,7 @@ with open('CMDs/plot_distributions.cmd', 'a') as f:
 
 
 # Load the data
-pkl = pickle.load(open(data_file, "rb"))
+pkl = pickle.load(open(data_path, "rb"))
 X = pkl['X']
 M = pkl['M']
 speaker_ids = pkl['ids']
@@ -70,4 +72,4 @@ model_uni_opt.eval()
 
 # Plot the y value distributions
 out_file = "no_attack.png"
-plot_y_dist(model, X, M, out_file_path)
+plot_y_dist(model, X, M, out_file)
