@@ -63,7 +63,6 @@ commandLineParser.add_argument('MODEL', type=str, help='Specify trained model pa
 commandLineParser.add_argument('MODEL_INDV_OPT', type=str, help='Specify trained individual optimal attack model path')
 commandLineParser.add_argument('MODEL_UNI_INDV', type=str, help='Specify trained individual inspired universal attack model path')
 commandLineParser.add_argument('MODEL_UNI_OPT', type=str, help='Specify trained optimal universal attack model path')
-commandLineParser.add_argument('OUT_PREFIX', type=str, help='Specify the output png files location and prefix')
 commandLineParser.add_argument('--epsilon', default=None, type=float, help='Specify the epsilon constraint in the models used')
 
 args = commandLineParser.parse_args()
@@ -72,7 +71,6 @@ model_path = args.MODEL
 model_indv_opt_path = args.MODEL_INDV_OPT
 model_uni_indv_path = args.MODEL_UNI_INDV
 model_uni_opt_path = args.MODEL_UNI_OPT
-out_file_prefix = args.OUT_PREFIX
 e = args.epsilon
 
 # Save the command run
