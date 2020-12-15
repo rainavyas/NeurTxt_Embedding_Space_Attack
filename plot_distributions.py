@@ -22,6 +22,38 @@ def plot_y_dist(model, X, M, out_file_path):
     sns_plot.set(xlim=(0, 6))
     sns_plot.figure.savefig(out_file_path)
 
+def plot_attack_dot_product_dist(model_indv, model_uni, out_file_path):
+    '''
+    normalises attack vectors from both models first
+    '''
+    old_params_indv = {}
+    old_params_uni
+
+    for name, params in model_indv.named_parameters():
+        old_params_indv[name] = params.clone()
+    for name, params in model_uni.named_parameters():
+        old_params_uni[name] = params.clone()
+
+    delta_indv = old_params_indv['attack']
+    delta_uni = old_params_uni['attack']
+
+    delta_indv = delta_indv.reshape(delta_indv.size(0), -1)
+    delta_uni = delta_uni.reshape(-1)
+
+    delta_indv_norm = delta_indv/(torch.sqrt(torch.sum(delta_indv**2, dim=1, keepdim=True)).repeat((1,delta_indv.size(-1))))
+    delta_uni_norm = delta_uni/torch.sqrt(torch.sum(delta_uni**2))
+
+    cosine_simalirity = torch.sum(delta_indv_norm*(delta_uni_norm.repeat((delta_indv_norm.size(0), 1))), dim=1)
+    d = cosine_simalirity.tolist()
+
+    sns_plot = sns.distplot(d, hist=True, kde=True,
+             bins=int(6/0.1), color = 'darkblue',
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
+    sns_plot.set(xlabel="Cosine Similarity between universal and individual attacks")
+    #sns_plot.set(xlim=(0, 6))
+    sns_plot.figure.savefig(out_file_path)
+
 
 
 # Get command line arguments
@@ -71,5 +103,17 @@ model_uni_opt = torch.load(model_uni_opt_path)
 model_uni_opt.eval()
 
 # Plot the y value distributions
-out_file = "no_attack.png"
+out_file = "y_no_attack.png"
 plot_y_dist(model, X, M, out_file)
+out_file = "y_attack_ind_opt.png"
+plot_y_dist(model_indv_opt, X, M, out_file)
+out_file = "y_attack_uni_ind.png"
+plot_y_dist(model_uni_indv, X, M, out_file)
+out_file = "y_attack_uni_opt.png"
+plot_y_dist(model_uni_opt, X, M, out_file)
+
+# Plot the dot product distributions
+out_file = "cosine_indv_opt_and_uni_indv.png"
+plot_attack_dot_product_dist(model_indv_opt, model_uni_indv, out_file)
+out_file = "cosine_indv_opt_and_uni_indv.png"
+plot_attack_dot_product_dist(model_indv_opt, model_uni_opt, out_file)
