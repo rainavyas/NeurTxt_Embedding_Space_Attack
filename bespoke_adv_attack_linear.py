@@ -41,7 +41,7 @@ e = args.epsilon
 # Save the command run
 if not os.path.isdir('CMDs'):
     os.mkdir('CMDs')
-with open('CMDs/bespoke_adv_attack.cmd', 'a') as f:
+with open('CMDs/bespoke_adv_attack_linear.cmd', 'a') as f:
     f.write(' '.join(sys.argv)+'\n')
 
 # Load the data
