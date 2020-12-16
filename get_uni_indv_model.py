@@ -25,7 +25,7 @@ with open('CMDs/get_uni_indv_model.cmd', 'a') as f:
     f.write(' '.join(sys.argv)+'\n')
 
 # Load each model
-model_indv_opt = torch.load(model_indv_opt)
+model_indv_opt = torch.load(model_indv_opt_path)
 model_uni = torch.load(model_uni_path)
 
 # Copy the parameters

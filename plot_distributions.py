@@ -21,13 +21,14 @@ def plot_y_dist(model, X, M, out_file_path):
     sns_plot.set(xlabel="y")
     sns_plot.set(xlim=(0, 6))
     sns_plot.figure.savefig(out_file_path)
+    sns_plot.get_figure().clf()
 
 def plot_attack_dot_product_dist(model_indv, model_uni, out_file_path):
     '''
     normalises attack vectors from both models first
     '''
     old_params_indv = {}
-    old_params_uni
+    old_params_uni = {}
 
     for name, params in model_indv.named_parameters():
         old_params_indv[name] = params.clone()
@@ -47,13 +48,13 @@ def plot_attack_dot_product_dist(model_indv, model_uni, out_file_path):
     d = cosine_simalirity.tolist()
 
     sns_plot = sns.distplot(d, hist=True, kde=True,
-             bins=int(6/0.1), color = 'darkblue',
+             bins=60, color = 'darkblue',
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
     sns_plot.set(xlabel="Cosine Similarity between universal and individual attacks")
     #sns_plot.set(xlim=(0, 6))
     sns_plot.figure.savefig(out_file_path)
-
+    sns_plot.get_figure().clf()
 
 
 # Get command line arguments
@@ -93,8 +94,8 @@ M = torch.FloatTensor(M)
 # Load the original and attack models
 model = torch.load(model_path)
 model.eval()
-model_ind_opt = torch.load(model_indv_opt_path)
-model_ind_opt.eval()
+model_indv_opt = torch.load(model_indv_opt_path)
+model_indv_opt.eval()
 model_uni_indv = torch.load(model_uni_indv_path)
 model_uni_indv.eval()
 model_uni_opt = torch.load(model_uni_opt_path)
@@ -113,5 +114,5 @@ plot_y_dist(model_uni_opt, X, M, out_file)
 # Plot the dot product distributions
 out_file = "cosine_indv_opt_and_uni_indv.png"
 plot_attack_dot_product_dist(model_indv_opt, model_uni_indv, out_file)
-out_file = "cosine_indv_opt_and_uni_indv.png"
+out_file = "cosine_indv_opt_and_uni_opt.png"
 plot_attack_dot_product_dist(model_indv_opt, model_uni_opt, out_file)
