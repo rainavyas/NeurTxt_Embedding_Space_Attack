@@ -7,6 +7,7 @@ import os
 import argparse
 import matplotlib as plt
 import seaborn as sns
+from utility import calculate_pcc
 
 def plot_y_dist(model, X, M, out_file_path):
     y_pred = model(X, M)
@@ -22,6 +23,7 @@ def plot_y_dist(model, X, M, out_file_path):
     sns_plot.set(xlim=(0, 6))
     sns_plot.figure.savefig(out_file_path)
     sns_plot.get_figure().clf()
+    return y
 
 def plot_attack_dot_product_dist(model_indv, model_uni, out_file_path):
     '''
@@ -56,6 +58,18 @@ def plot_attack_dot_product_dist(model_indv, model_uni, out_file_path):
     sns_plot.figure.savefig(out_file_path)
     sns_plot.get_figure().clf()
 
+    return d
+
+def plot_scatter(x, y, xlabel, ylabel, out_file_path):
+    # Calculate the pcc
+    pcc = calculate_pcc(x, y)
+    sns.set_theme(color_codes=True)
+    scatter_plot =  sns.regplot(x=x, y=y)
+    scatter_plot.set(xlabel=xlabel)
+    scatter_plot.set(ylabel=ylabel)
+    scatter_plot.figure.savefig(out_file_path)
+    scatter_plot.get_figure().clf()
+    scatter_plot.set_title("PCC: "+str(pcc))
 
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
@@ -103,16 +117,38 @@ model_uni_opt.eval()
 
 # Plot the y value distributions
 out_file = "y_no_attack.png"
-plot_y_dist(model, X, M, out_file)
+y_no_attack = plot_y_dist(model, X, M, out_file)
 out_file = "y_attack_ind_opt.png"
-plot_y_dist(model_indv_opt, X, M, out_file)
+y_indv_opt = plot_y_dist(model_indv_opt, X, M, out_file)
 out_file = "y_attack_uni_ind.png"
-plot_y_dist(model_uni_indv, X, M, out_file)
+y_uni_indv = plot_y_dist(model_uni_indv, X, M, out_file)
 out_file = "y_attack_uni_opt.png"
-plot_y_dist(model_uni_opt, X, M, out_file)
+y_uni_opt = plot_y_dist(model_uni_opt, X, M, out_file)
 
 # Plot the dot product distributions
 out_file = "cosine_indv_opt_and_uni_indv.png"
-plot_attack_dot_product_dist(model_indv_opt, model_uni_indv, out_file)
+cosine_indv_opt_and_uni_indv = plot_attack_dot_product_dist(model_indv_opt, model_uni_indv, out_file)
 out_file = "cosine_indv_opt_and_uni_opt.png"
-plot_attack_dot_product_dist(model_indv_opt, model_uni_opt, out_file)
+cosine_indv_opt_and_uni_opt = plot_attack_dot_product_dist(model_indv_opt, model_uni_opt, out_file)
+
+# Plot scatter plots of y_pred pairings and calculate pcc
+xlabel = "y with optimal individual attacks"
+ylabel = "y with universal attack derived from individual attacks"
+out_file = "scatter_y_indv_opt_and_y_uni_indv.png"
+plot_scatter(y_indv_opt, y_uni_indv, xlabel, ylabel, out_file)
+
+xlabel = "y with optimal individual attacks"
+ylabel = "y with optimal universal attack"
+out_file = "scatter_y_indv_opt_and_y_uni_opt.png"
+plot_scatter(y_indv_opt, y_uni_opt, xlabel, ylabel, out_file)
+
+xlabel = "y with optimal universal attack"
+ylabel = "y with universal attack derived from individual attacks"
+out_file = "scatter_y_uni_opt_and_y_uni_indv.png"
+plot_scatter(y_uni_opt, y_uni_indv, xlabel, ylabel, out_file)
+
+# Plot scatter plot of cosine distances from each universal attack
+xlabel = "Cosine distance of optimal individual attack with optimal universal attack"
+ylabel = "Cosine distance of optimal individual attack with universal attack derived from individuals"
+out_file = "scatter_cosine_distances.png"
+plot_scatter(cosine_indv_opt_and_uni_opt, cosine_indv_opt_and_uni_indv, xlabel, ylabel, out_file)
