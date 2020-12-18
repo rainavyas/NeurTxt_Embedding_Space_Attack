@@ -73,10 +73,12 @@ def plot_scatter(x, y, xlabel, ylabel, out_file_path):
     scatter_plot.get_figure().clf()
 
 def plot_change_in_y_vs_cosine(y_increase, cosine_d, out_file_path):
+    pcc = calculate_pcc(torch.FloatTensor(cosine_d), torch.FloatTensor(y_increase))
     sns.set_theme(color_codes=True)
     scatter_plot =  sns.regplot(x=cosine_d, y=y_increase)
     scatter_plot.set(xlabel="Cosine distance between individual and universal attacks")
     scatter_plot.set(ylabel="Increase in score from universal attack")
+    scatter_plot.set(title="PCC: "+str(pcc))
     scatter_plot.figure.savefig(out_file_path)
     scatter_plot.get_figure().clf()
 
