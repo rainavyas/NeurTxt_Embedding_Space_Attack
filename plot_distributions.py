@@ -153,3 +153,23 @@ xlabel = "Cosine dist of opt indv attack with optimal universal attack"
 ylabel = "Cosine dist of opt indv attack with universal attack indv"
 out_file = "scatter_cosine_distances.png"
 plot_scatter(cosine_indv_opt_and_uni_opt, cosine_indv_opt_and_uni_indv, xlabel, ylabel, out_file)
+
+# Compute the cosine distance between universal attacks
+old_params1 = {}
+old_params2 = {}
+
+for name, params in model_uni_indv.named_parameters():
+    old_params1[name] = params.clone()
+for name, params in model_uni_opt.named_parameters():
+    old_params2[name] = params.clone()
+
+delta1 = old_params1['attack']
+delta2 = old_params2['attack']
+
+delta1 = delta1.reshape(-1)
+delta2= delta2.reshape(-1)
+
+delta1_norm = delta1/torch.sqrt(torch.sum(delta1**2))
+delta2_norm = delta2/torch.sqrt(torch.sum(delta2**2))
+cosine_simalirity = torch.sum(delta2_norm*delta1_norm)
+print("Cosine similarity between universal attack vectors: ", cosine_simalirity)
