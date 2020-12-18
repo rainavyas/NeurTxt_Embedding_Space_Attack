@@ -184,8 +184,8 @@ cosine_simalirity = torch.sum(delta2_norm*delta1_norm)
 print("Cosine similarity between universal attack vectors: ", cosine_simalirity)
 
 # Plot of increase in y against cosine distance
-increase_y = torch.FloatTensor(y_attack_uni_opt)-torch.FloatTensor(y_no_attack)
+increase_y = torch.FloatTensor(y_uni_opt)-torch.FloatTensor(y_no_attack)
 increase_y.tolist()
 cosine_d = cosine_indv_opt_and_uni_opt
 out_file = "increase_y_vs_cosine_uni_opt.png"
-plot_change_in_y_vs_cosine(y_increase, cosine_d, out_file)
+plot_change_in_y_vs_cosine(increase_y, cosine_d, out_file)
