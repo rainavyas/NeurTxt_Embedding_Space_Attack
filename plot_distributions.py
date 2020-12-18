@@ -72,6 +72,15 @@ def plot_scatter(x, y, xlabel, ylabel, out_file_path):
     scatter_plot.figure.savefig(out_file_path)
     scatter_plot.get_figure().clf()
 
+def plot_change_in_y_vs_cosine(y_increase, cosine_d, out_file_path):
+    sns.set_theme(color_codes=True)
+    scatter_plot =  sns.regplot(x=cosine_d, y=y_increase)
+    scatter_plot.set(xlabel="Cosine distance between individual and universal attacks")
+    scatter_plot.set(ylabel="Increase in score from universal attack")
+    scatter_plot.figure.savefig(out_file_path)
+    scatter_plot.get_figure().clf()
+
+
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
 commandLineParser.add_argument('DATA', type=str, help='Specify input pkl file with prepared useful data')
@@ -173,3 +182,10 @@ delta1_norm = delta1/torch.sqrt(torch.sum(delta1**2))
 delta2_norm = delta2/torch.sqrt(torch.sum(delta2**2))
 cosine_simalirity = torch.sum(delta2_norm*delta1_norm)
 print("Cosine similarity between universal attack vectors: ", cosine_simalirity)
+
+# Plot of increase in y against cosine distance
+increase_y = torch.FloatTensor(y_attack_uni_opt)-torch.FloatTensor(y_no_attack)
+increase_y.tolist()
+cosine_d = cosine_indv_opt_and_uni_opt
+out_file = "increase_y_vs_cosine_uni_opt.png"
+plot_change_in_y_vs_cosine(y_increase, cosine_d, out_file)
