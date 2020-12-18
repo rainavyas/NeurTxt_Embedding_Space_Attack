@@ -183,10 +183,18 @@ delta2_norm = delta2/torch.sqrt(torch.sum(delta2**2))
 cosine_simalirity = torch.sum(delta2_norm*delta1_norm)
 print("Cosine similarity between universal attack vectors: ", cosine_simalirity)
 
-# Plot of increase in y against cosine distance
+# Plot of increase in y against cosine distance for uni opt
 increase_y = torch.FloatTensor(y_uni_opt)-torch.FloatTensor(y_no_attack)
 increase_y = increase_y.squeeze().tolist()
 cosine_d = torch.FloatTensor(cosine_indv_opt_and_uni_opt).squeeze()
 cosine_d = cosine_d.tolist()
 out_file = "increase_y_vs_cosine_uni_opt.png"
+plot_change_in_y_vs_cosine(increase_y, cosine_d, out_file)
+
+# Plot of increase in y against cosine distance for uni indv
+increase_y = torch.FloatTensor(y_uni_indv)-torch.FloatTensor(y_no_attack)
+increase_y = increase_y.squeeze().tolist()
+cosine_d = torch.FloatTensor(cosine_indv_opt_and_uni_indv).squeeze()
+cosine_d = cosine_d.tolist()
+out_file = "increase_y_vs_cosine_uni_indv.png"
 plot_change_in_y_vs_cosine(increase_y, cosine_d, out_file)
