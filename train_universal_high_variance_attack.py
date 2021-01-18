@@ -167,7 +167,7 @@ for word_num, new_word in enumerate(test_words):
         # Determine average cosine distance of shifts to attack direction for all other words
         shift = E - E_original
         cos = torch.nn.CosineSimilarity(dim=1)
-        sim = torch.abs(cos(shift, attack_direction_expanded)
+        sim = torch.abs(cos(shift, attack_direction_expanded))
         avg_sim = torch.mean(sim)
         avg_sim = avg_sim.data[0]
 
