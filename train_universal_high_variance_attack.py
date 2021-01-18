@@ -134,7 +134,6 @@ for word_num, new_word in enumerate(test_words):
 
         X.append(new_utts)
         utt_lengths_matrix.append(utt_lengths)
-        speaker_ids.append(id)
 
     XT = torch.FloatTensor(X)
     L = torch.FloatTensor(utt_lengths_matrix)
