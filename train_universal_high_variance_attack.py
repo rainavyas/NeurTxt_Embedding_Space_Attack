@@ -62,7 +62,7 @@ best = ['none', 0]
 
 # Initialise empty log file
 with open(log_file, 'w') as f:
-    f.write("Logged on ", date.today())
+    f.write("Logged on "+ str(date.today())
 
 for word_num, new_word in enumerate(test_words):
 
