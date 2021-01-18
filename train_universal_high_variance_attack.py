@@ -178,5 +178,6 @@ for word_num, new_word in enumerate(test_words):
             best = [new_word, avg_sim]
             # Write to log
             with open(log_file, 'a') as f:
-                f.write(best[0], best[1])
-            print(best[0], best[1])
+                out = best[0]+ " " + str(best[1])
+                f.write(out)
+            print(out)
