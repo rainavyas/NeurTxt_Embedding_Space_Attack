@@ -65,6 +65,7 @@ best = ['none', 0]
 with open(log_file, 'w') as f:
     f.write("Logged on "+ str(date.today()))
 
+print(test_words[:20])
 for word_num, new_word in enumerate(test_words):
 
     # Add new word to every utterance
