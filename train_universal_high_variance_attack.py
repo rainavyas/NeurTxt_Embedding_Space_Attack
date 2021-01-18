@@ -143,16 +143,14 @@ for word_num, new_word in enumerate(test_words):
 
     # Compute mean embedding per speaker
     E = torch.sum(XT, dim=2).squeeze()
-    L_repeated = torch.repeat(L.unsqueeze(-1), (1,1,768))
+    L_repeated = L.repeat(1,768)
     E = E/L_repeated
-
-    E_original = None
 
     # For no word added, determine attack direction
     if word_num == 0:
         # Compute covariance of mean embeddings
         E_original = E
-        E_mean_original = torch.mean(E, dim=0)
+        E_mean = torch.mean(E, dim=0)
         E_mean_matrix = torch.outer(E_mean, E_mean)
         E_corr_matrix = torch.matmul(torch.transpose(E, 0, 1), E)/E.size(0)
         Cov = E_corr_matrix - E_mean_matrix
@@ -164,14 +162,14 @@ for word_num, new_word in enumerate(test_words):
         e = e[inds]
         v = v[inds]
         attack_direction = v[-1]
-        attack_direction_expanded = torch.repeat(attack_direction.unsqueeze(), (XT.size(0), 1))
+        attack_direction_expanded = attack_direction.unsqueeze(0).repeat(XT.size(0), 1)
     else:
         # Determine average cosine distance of shifts to attack direction for all other words
         shift = E - E_original
         cos = torch.nn.CosineSimilarity(dim=1)
         sim = torch.abs(cos(shift, attack_direction_expanded))
         avg_sim = torch.mean(sim)
-        avg_sim = avg_sim.data[0]
+        avg_sim = avg_sim.item()
 
         # Check if better than best
         if avg_sim > best[1]:
