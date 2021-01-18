@@ -170,7 +170,7 @@ for word_num, new_word in enumerate(test_words):
         sim = torch.abs(cos(shift, attack_direction_expanded))
         avg_sim = torch.mean(sim)
         avg_sim = avg_sim.item()
-
+        print(new_word, avg_sim)
         # Check if better than best
         if avg_sim > best[1]:
             best = [new_word, avg_sim]
@@ -178,4 +178,6 @@ for word_num, new_word in enumerate(test_words):
             with open(log_file, 'a') as f:
                 out = '\n'+best[0]+ " " + str(best[1])
                 f.write(out)
+            print("--------------------------------")
             print(out)
+            print("--------------------------------")
