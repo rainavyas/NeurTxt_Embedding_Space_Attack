@@ -9,6 +9,8 @@ import argparse
 import json
 from transformers import *
 from datetime import date
+import sys
+import os
 
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
