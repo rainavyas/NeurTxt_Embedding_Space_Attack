@@ -177,3 +177,4 @@ for word_num, new_word in enumerate(test_words):
             # Write to log
             with open(log_file, 'a') as f:
                 f.write(best[0], best[1])
+            print(best[0], best[1])
