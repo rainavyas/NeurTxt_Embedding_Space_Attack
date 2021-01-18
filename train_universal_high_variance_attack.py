@@ -11,6 +11,7 @@ from transformers import *
 from datetime import date
 import sys
 import os
+import torch
 
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
