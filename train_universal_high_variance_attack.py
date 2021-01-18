@@ -45,7 +45,7 @@ utterances = [[str(item[0]), str(item[1])] for item in utterances]
 # Get the list of words to iterate through
 with open(vocab_file, 'r') as f:
     test_words = json.loads(f.read())
-test_words = [str(word[0]).lower() for word in test_words]
+test_words = [str(word).lower() for word in test_words]
 
 # Add blank word at beginning of list
 test_words = ['']+test_words
