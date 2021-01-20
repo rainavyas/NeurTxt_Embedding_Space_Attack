@@ -18,12 +18,15 @@ commandLineParser = argparse.ArgumentParser()
 commandLineParser.add_argument('DATA', type=str, help='Specify input txt file with prepared useful data')
 commandLineParser.add_argument('VOCAB', type=str, help='Specify txt file with ASR word list')
 commandLineParser.add_argument('LOG', type=str, help='Specify txt file to log iteratively better words')
-
+commandLineParser.add_argument('BATCH_SIZE', type=int, default=400, help='Number of words to check')
+commandLineParser.add_argument('START', type=int, help='Batch number')
 
 args = commandLineParser.parse_args()
 data_file = args.DATA
 vocab_file = args.VOCAB
 log_file = args.LOG
+batch_size = args.BATCH_SIZE
+start = args.START
 
 # Save the command run
 if not os.path.isdir('CMDs'):
@@ -37,7 +40,7 @@ MAX_WORDS_IN_UTT = 200
 # Load the data
 with open(data_file, 'r') as f:
     utterances = json.loads(f.read())
-print("Loaded Data")
+#print("Loaded Data")
 
 # Convert json output from unicode to string
 utterances = [[str(item[0]), str(item[1])] for item in utterances]
@@ -47,16 +50,20 @@ with open(vocab_file, 'r') as f:
     test_words = json.loads(f.read())
 test_words = [str(word).lower() for word in test_words]
 
+# Keep only selected batch of words
+start_index = start*batch_size
+test_words = test_words[start_index:start_index+batch_size]
+
 # Add blank word at beginning of list
 test_words = ['']+test_words
 
-print("Words to check: ", len(test_words))
+#print("Words to check: ", len(test_words))
 
 # Load tokenizer and BERT model
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased', do_basic_tokenize=False, do_lower_case=True)
 bert_model = BertModel.from_pretrained('bert-base-cased')
 bert_model.eval()
-print("Loaded BERT model")
+#print("Loaded BERT model")
 
 # Define threshold to beat
 best = ['none', 0]
@@ -65,7 +72,7 @@ best = ['none', 0]
 with open(log_file, 'w') as f:
     f.write("Logged on "+ str(date.today()))
 
-print(test_words[:20])
+#print(test_words[:20])
 for word_num, new_word in enumerate(test_words):
 
     # Add new word to every utterance
@@ -171,7 +178,7 @@ for word_num, new_word in enumerate(test_words):
         sim = torch.abs(cos(shift, attack_direction_expanded))
         avg_sim = torch.mean(sim)
         avg_sim = avg_sim.item()
-        print(new_word, avg_sim)
+ #       print(new_word, avg_sim)
         # Check if better than best
         if avg_sim > best[1]:
             best = [new_word, avg_sim]
@@ -179,6 +186,6 @@ for word_num, new_word in enumerate(test_words):
             with open(log_file, 'a') as f:
                 out = '\n'+best[0]+ " " + str(best[1])
                 f.write(out)
-            print("--------------------------------")
-            print(out)
-            print("--------------------------------")
+  #          print("--------------------------------")
+   #         print(out)
+    #        print("--------------------------------")
