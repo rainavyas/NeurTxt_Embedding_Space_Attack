@@ -80,6 +80,7 @@ for item in utterances:
 
 # get speakerid to section grade dict
 grade_dict = {}
+section_num = 3
 
 lines = [line.rstrip('\n') for line in open(grades_file)]
 for line in lines[1:]:
@@ -101,8 +102,11 @@ grades = []
 vals = []
 
 for id in utt_embs:
-    grades.append(grade_dict[id])
-    vals.append(utt_embs[id])
+    try:
+        grades.append(grade_dict[id])
+        vals.append(utt_embs[id])
+    except:
+        print(id)
 
 # Convert to appropriate 4D tensor
 # Initialise list to hold all input data in tensor format
@@ -161,7 +165,7 @@ model = torch.load(trained_model_path)
 model.eval()
 
 # Get model predictions
-y_pred = model(X, M)
+y_pred = model(X, M).squeeze()
 y_pred[y_pred>6] = 6
 y_pred[y_pred<0] = 0
 
