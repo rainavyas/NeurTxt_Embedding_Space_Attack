@@ -56,7 +56,8 @@ for curr_file in files:
     for line in lines[1:]:
         items = line.split()
         word = str(items[0])
-        cos_dist = float(items[1])
+        #cos_dist = float(items[1])
+        cos_dist = float(items[1][7:-1])
         if best.check_word_to_be_added(cos_dist):
             best.add_word(word, cos_dist)
 
