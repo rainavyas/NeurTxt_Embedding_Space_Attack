@@ -27,7 +27,7 @@ phrase = args.PHRASE
 # Save the command run
 if not os.path.isdir('CMDs'):
     os.mkdir('CMDs')
-with open('CMDs/train_universal_high_variance_attack_subset.cmd', 'a') as f:
+with open('CMDs/train_universal_high_dist_attack_subset.cmd', 'a') as f:
     f.write(' '.join(sys.argv)+'\n')
 
 MAX_UTTS_PER_SPEAKER_PART = 1
@@ -63,7 +63,7 @@ for word_num, new_word in enumerate(test_words):
 
     # Add new word and existing phrase to every utterance
     if word_num==0:
-        new_utterances = [[item[0], item[1]] for item in utterances]
+        new_utterances = [[item[0], item[1]+' '+new_word] for item in utterances]
     else:
         new_utterances = [[item[0], item[1]+' '+phrase+' '+new_word] for item in utterances]
 
@@ -135,6 +135,9 @@ for word_num, new_word in enumerate(test_words):
     XT = torch.FloatTensor(X)
     L = torch.FloatTensor(utt_lengths_matrix)
 
+    # Make the mask from utterance lengths matrix L
+    M = [[([1]*utt_len + [-100000]*(XT.size(2)- utt_len)) for utt_len in speaker] for speaker in utt_lengths_matrix]
+
     # Compute mean embedding per speaker
     E = torch.sum(XT, dim=2).squeeze()
     L_repeated = L.repeat(1,768)
@@ -142,35 +145,19 @@ for word_num, new_word in enumerate(test_words):
 
     # For no word added, determine attack direction
     if word_num == 0:
-        # Compute covariance of mean embeddings
         E_original = E
-        E_mean = torch.mean(E, dim=0)
-        E_mean_matrix = torch.outer(E_mean, E_mean)
-        E_corr_matrix = torch.matmul(torch.transpose(E, 0, 1), E)/E.size(0)
-        Cov = E_corr_matrix - E_mean_matrix
-
-        # Find largest eigenvalue
-        e, v = torch.symeig(Cov, eigenvectors=True)
-        e_abs = torch.abs(e)
-        inds = torch.argsort(e_abs)
-        e = e[inds]
-        v = v[inds]
-        attack_direction = v[-1]
-        attack_direction_expanded = attack_direction.unsqueeze(0).repeat(XT.size(0), 1)
     else:
         if new_word=='':
             continue
         # Determine average cosine distance of shifts to attack direction for all other words
         shift = E - E_original
-        cos = torch.nn.CosineSimilarity(dim=1)
-        sim = cos(shift, attack_direction_expanded)
-        avg_sim = torch.mean(sim)
-        avg_sim_abs = torch.abs(avg_sim).item()
-        avg_sim = avg_sim.item()
-        print(new_word, avg_sim)
+        dist = torch.mean(shift**2, dim=1)
+        avg_dist = torch.mean(dist)
+        avg_dist = avg_dist.item()
+        print(new_word, avg_dist)
         # Check if better than best
-        if avg_sim_abs > abs(best[1]):
-            best = [new_word, avg_sim]
+        if avg_dist > best[1]:
+            best = [new_word, avg_dist]
             out = '\n'+best[0]+ " " + str(best[1])
             print("--------------------------------")
             print(out)

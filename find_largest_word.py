@@ -43,7 +43,7 @@ class best_words:
 
 
 
-best = best_words(100)
+best = best_words(200)
 
 # Get list of files in directory
 files = [f.name for f in scandir.scandir(words_dir)]
@@ -56,10 +56,10 @@ for curr_file in files:
     for line in lines[1:]:
         items = line.split()
         word = str(items[0])
-        #cos_dist = float(items[1])
-        cos_dist = float(items[1][7:-1])
-        if best.check_word_to_be_added(cos_dist):
-            best.add_word(word, cos_dist)
+        cos_dist = float(items[1])
+        #cos_dist = float(items[1][7:-1])
+        if best.check_word_to_be_added(abs(cos_dist)):
+            best.add_word(word, abs(cos_dist))
 
 print(best.words)
 

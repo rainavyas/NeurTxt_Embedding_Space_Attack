@@ -12,6 +12,7 @@ from datetime import date
 import sys
 import os
 import torch
+import numpy as np
 
 # Get command line arguments
 commandLineParser = argparse.ArgumentParser()
@@ -40,7 +41,7 @@ MAX_WORDS_IN_UTT = 200
 # Load the data
 with open(data_file, 'r') as f:
     utterances = json.loads(f.read())
-#print("Loaded Data")
+print("Loaded Data")
 
 # Convert json output from unicode to string
 utterances = [[str(item[0]), str(item[1])] for item in utterances]
@@ -57,13 +58,13 @@ test_words = test_words[start_index:start_index+batch_size]
 # Add blank word at beginning of list
 test_words = ['']+test_words
 
-#print("Words to check: ", len(test_words))
+print("Words to check: ", len(test_words))
 
 # Load tokenizer and BERT model
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased', do_basic_tokenize=False, do_lower_case=True)
 bert_model = BertModel.from_pretrained('bert-base-cased')
 bert_model.eval()
-#print("Loaded BERT model")
+print("Loaded BERT model")
 
 # Define threshold to beat
 best = ['none', 0]
@@ -72,7 +73,7 @@ best = ['none', 0]
 with open(log_file, 'w') as f:
     f.write("Logged on "+ str(date.today()))
 
-#print(test_words[:20])
+print(test_words[:20])
 for word_num, new_word in enumerate(test_words):
 
     # Add new word to every utterance
@@ -153,6 +154,7 @@ for word_num, new_word in enumerate(test_words):
     E = torch.sum(XT, dim=2).squeeze()
     L_repeated = L.repeat(1,768)
     E = E/L_repeated
+  
 
     # For no word added, determine attack direction
     if word_num == 0:
@@ -162,30 +164,51 @@ for word_num, new_word in enumerate(test_words):
         E_mean_matrix = torch.outer(E_mean, E_mean)
         E_corr_matrix = torch.matmul(torch.transpose(E, 0, 1), E)/E.size(0)
         Cov = E_corr_matrix - E_mean_matrix
+        Cov = Cov + (1e-3*torch.eye(Cov.size(0)))
+        #print(Cov)
+        det = torch.det(Cov)
+        #print( "det", det)
 
+        torch.manual_seed(1)
+       
+        '''
+        # Use numpy to calculate largest eigenvector
+        Cov = Cov.numpy()
+        e, v = np.linalg.eigh(Cov)
+        e = torch.from_numpy(e)
+        v = torch.from_numpy(np.transpose(v))
+        
+        '''
         # Find largest eigenvalue
         e, v = torch.symeig(Cov, eigenvectors=True)
+        v = torch.transpose(v, 0, 1) 
         e_abs = torch.abs(e)
         inds = torch.argsort(e_abs)
         e = e[inds]
         v = v[inds]
+        condition_number = torch.abs(e[-1])/torch.abs(e[0])
+        print("Condition Number", condition_number)
         attack_direction = v[-1]
         attack_direction_expanded = attack_direction.unsqueeze(0).repeat(XT.size(0), 1)
     else:
         # Determine average cosine distance of shifts to attack direction for all other words
         shift = E - E_original
         cos = torch.nn.CosineSimilarity(dim=1)
-        sim = torch.abs(cos(shift, attack_direction_expanded))
+        sim = cos(shift, attack_direction_expanded)
         avg_sim = torch.mean(sim)
+        avg_sim_abs = torch.abs(avg_sim).item()
         avg_sim = avg_sim.item()
- #       print(new_word, avg_sim)
+        print(new_word, avg_sim)
         # Check if better than best
-        if avg_sim > best[1]:
+        if avg_sim_abs > abs(best[1]):
             best = [new_word, avg_sim]
             # Write to log
             with open(log_file, 'a') as f:
                 out = '\n'+best[0]+ " " + str(best[1])
                 f.write(out)
-  #          print("--------------------------------")
-   #         print(out)
-    #        print("--------------------------------")
+            print("--------------------------------")
+            print(out)
+            print("--------------------------------")
+        #print(attack_direction)
+        torch.save(attack_direction, 'temp2.pt')
+        print('Done')
