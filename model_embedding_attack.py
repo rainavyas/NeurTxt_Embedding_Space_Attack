@@ -1,5 +1,5 @@
 import torch
-from models import ThreeLayerNet_1LevelAttn_RNN
+from models import ThreeLayerNet_1LevelAttn
 
 class Universal_Attack(torch.nn.Module):
     def __init__(self,  trained_model_path, init_attack, embedding_size=768, num_words=200):
