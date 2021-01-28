@@ -33,7 +33,7 @@ args = commandLineParser.parse_args()
 data_file = args.DATA
 trained_model_path = args.MODEL
 grades_file = args.GRADES
-e = args.epsilon
+epsilon = args.epsilon
 
 # Save the command run
 if not os.path.isdir('CMDs'):
