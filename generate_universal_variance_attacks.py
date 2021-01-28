@@ -19,7 +19,7 @@ from transformers import *
 def apply_attack(X, attack_direction, epsilon):
     attack_signs = torch.sign(attack_direction)
     attack = (attack_signs * epsilon) # can multiply by -1 to reverse direction of attack
-    attack_batched = self.attack.repeat((X.size(0),1,1,1))
+    attack_batched = attack.repeat((X.size(0),1,1,1))
     X_attacked = X + attack_batched
     return X_attacked
 
