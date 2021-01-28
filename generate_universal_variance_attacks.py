@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from utility import *
 import json
 from transformers import *
+from torch.nn import CosineSimilarity
 
 def apply_attack(X, attack_direction, epsilon):
     attack_signs = torch.sign(attack_direction)
@@ -216,6 +217,18 @@ for i in range(0, e.size(0), 5):
     pccs.append(pcc)
     avgs.append(avg.detach())
 
+    # Get cosine distances
+    v_after = torch.matmul(Cov, eigenvector)
+    cos = CosineSimilarity(dim=0)
+    cos_dist = cos(eigenvector, v_after)
+    cosines.append(cos_dist.item())
+
+    # Get ratio
+    size_before = torch.norm(eigenvector)
+    size_after = torch.norm(v_after)
+    ratio = size_after/size_before
+    ratios.append(ratio.item())
+
 # Plot the graphs
 
 # MSE vs eigenvalue
@@ -240,4 +253,21 @@ plt.ylabel("Average Score")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
 plt.savefig("avg_eigenvalue.png")
+plt.clf()
+
+# cosine distance vs eigenvalue
+plt.plot(eigenvalues, cosines, 'o')
+plt.ylabel("Cosine Distance")
+plt.xlabel("Eigenvalue")
+plt.xscale('log')
+plt.savefig("cosine_eigenvalue.png")
+plt.clf()
+
+# ratio vs eigenvalue
+plt.plot(eigenvalues, ratios, 'o')
+plt.ylabel("Ratio")
+plt.xlabel("Eigenvalue")
+plt.xscale('log')
+plt.yscale('log')
+plt.savefig("ratio_eigenvalue.png")
 plt.clf()
