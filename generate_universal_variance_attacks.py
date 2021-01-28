@@ -13,6 +13,7 @@ import torch
 from models import ThreeLayerNet_1LevelAttn
 import matplotlib.pyplot as plt
 from utility import *
+import json
 
 def apply_attack(X, attack_direction, epsilon):
     attack_signs = torch.sign(attack_direction)
