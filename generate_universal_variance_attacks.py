@@ -198,7 +198,7 @@ avgs = []
 cosines = [] # Do this part later
 ratios = [] # Do this later too
 
-for i in range(0, e.size(0), 10):
+for i in range(0, e.size(0), 5):
 
     eigenvalue = e[i]
     eigenvector = v[i]
@@ -219,7 +219,7 @@ for i in range(0, e.size(0), 10):
 # Plot the graphs
 
 # MSE vs eigenvalue
-plt.plot(eigenvalues, mses)
+plt.scatter(eigenvalues, mses)
 plt.ylabel("MSE")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
@@ -227,16 +227,16 @@ plt.savefig("mse_eigenvalue.png")
 plt.clf()
 
 # PCC vs eigenvalue
-plt.plot(eigenvalues, pccs)
-plt.ylabel("MSE")
+plt.scatter(eigenvalues, pccs)
+plt.ylabel("PCC")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
 plt.savefig("pcc_eigenvalue.png")
 plt.clf()
 
 # avg vs eigenvalue
-plt.plot(eigenvalues, avgs)
-plt.ylabel("MSE")
+plt.scatter(eigenvalues, avgs)
+plt.ylabel("Average Score")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
 plt.savefig("avg_eigenvalue.png")
