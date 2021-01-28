@@ -29,7 +29,6 @@ commandLineParser.add_argument('--epsilon', default=1.0, type=float, help='Speci
 args = commandLineParser.parse_args()
 data_file = args.DATA
 trained_model_path = args.MODEL
-out_file = args.OUT
 e = args.epsilon
 
 # Save the command run
