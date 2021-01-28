@@ -219,7 +219,7 @@ for i in range(0, e.size(0), 5):
 # Plot the graphs
 
 # MSE vs eigenvalue
-plt.scatter(eigenvalues, mses)
+plt.plot(eigenvalues, mses, 'o')
 plt.ylabel("MSE")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
@@ -227,7 +227,7 @@ plt.savefig("mse_eigenvalue.png")
 plt.clf()
 
 # PCC vs eigenvalue
-plt.scatter(eigenvalues, pccs)
+plt.plot(eigenvalues, pccs, 'o')
 plt.ylabel("PCC")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
@@ -235,7 +235,7 @@ plt.savefig("pcc_eigenvalue.png")
 plt.clf()
 
 # avg vs eigenvalue
-plt.scatter(eigenvalues, avgs)
+plt.plot(eigenvalues, avgs, 'o')
 plt.ylabel("Average Score")
 plt.xlabel("Eigenvalue")
 plt.xscale('log')
