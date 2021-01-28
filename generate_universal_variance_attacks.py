@@ -213,7 +213,7 @@ for i in range(0, e.size(0), 5):
     ranks.append(i)
     eigenvalues.append(eigenvalue)
     mses.append(mse)
-    pccs.append(pcc.detach())
+    pccs.append(pcc)
     avgs.append(avg.detach())
 
 # Plot the graphs
