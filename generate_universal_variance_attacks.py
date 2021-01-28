@@ -212,7 +212,7 @@ for i in range(0, e.size(0), 5):
 
     ranks.append(i)
     eigenvalues.append(eigenvalue)
-    mses.append(mse.detach())
+    mses.append(mse)
     pccs.append(pcc.detach())
     avgs.append(avg.detach())
 
