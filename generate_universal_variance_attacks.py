@@ -24,11 +24,13 @@ def apply_attack(X, attack_direction, epsilon):
 commandLineParser = argparse.ArgumentParser()
 commandLineParser.add_argument('DATA', type=str, help='Specify input pkl file with prepared useful data')
 commandLineParser.add_argument('MODEL', type=str, help='Specify trained model path')
+commandLineParser.add_argument('GRADES', type=str, help='Specify grades file')
 commandLineParser.add_argument('--epsilon', default=1.0, type=float, help='Specify the epsilon constraint')
 
 args = commandLineParser.parse_args()
 data_file = args.DATA
 trained_model_path = args.MODEL
+grades_file = args.GRADES
 e = args.epsilon
 
 # Save the command run
